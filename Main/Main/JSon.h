@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stack>
 #include "Iterator.h"
-//#include "Value.h"
+#include "Tokenizer.h"
 
 using namespace std;
 
@@ -21,52 +21,25 @@ public:
 	}
 	void save(string filename)
 	{
-		//Value* v = new Value();
-		//ifstream in(filename);
-		//string text;
-		//string value = "";
-		//string tmp = "";
-		//string _key = "";
-		//in >> text;
-		//int i = 0;
-		//int count_obj = 0;
-		//int cov = 0;
-		//int figskob = 0;
-		//int ch = 0;
-		//while (i <= text.size())
-		//{
-		//	char c = text[i];
-		//	switch (ch)
-		//	{
-		//		case 0:
-		//		{
-		//			if()
-		//			ch = 1;
-		//			break;
-		//		}
 
-
-		//		//case '}':
-		//		//{
-		//		//	ch = 0;
-		//		//	break;
-		//		//}
-		//		//case ':':
-		//		//{
-		//		//	if(text[i-1]=='"' && ch == 1)
-		//		//	 _key= tmp;
-		//		//}
-		//		//case '"':
-		//		//{
-		//		//	if (text[i - 1] == '"' && ch == 1)
-		//		//		_key = tmp;
-		//		//}
-		//	}
-		//}
 	}
 	void load(string filename)
 	{
-
+		fstream file;
+		if(!file.is_open())
+			file.open(filename, ios::out);
+		IterVal* iter = root->Iter();
+		while (iter->hasNext())
+		{
+			file << iter->next()->val->WriteValue();
+		}
+	}
+	void load_current(string filename)
+	{
+		fstream file;
+		if (!file.is_open())
+			file.open(filename, ios::out);
+			file << cur->val->GetVal();
 	}
 	void next()
 	{
@@ -85,12 +58,82 @@ public:
 		if (cur->val->getType() == 0)
 		{
 			st.pop();
-
 		}
 		else
 		{
-			cur = st.top()->prev();
+			if(st.top()->hasPrev())
+				cur = st.top()->prev();
+			else
+			{
+
+			}
 		}
 	}
+	IValue* parse(string filename)
+	{
+		Token* token;
+		IValue* val;
+		string key = "";
+		stack<Token*> st;
+		Tokenizer tokenizer(filename);
+		while (tokenizer.hasMoreTokens())
+		{
+			token = tokenizer.getToken();
+			switch (token->type)
+			{
+			case TOKEN::STRING:
+			{
+				break;
+			}
+
+			case TOKEN::CURLY_OPEN:
+			{
+				if (st.top()->type == TOKEN::COLON)
+				{
+					val = new LIstValue();
+				}
+
+				break;
+			}
+			break;
+			}
+		}
+
+	}
+
+
+
+
+
+		//token = tokenizer.getToken();
+		//string str = "";
+		//string tmp = "";
+		//fstream file(filename);
+		//file >> str;
+		//int state = 0;
+		//for (int i = 0; i < str.size(); i++)
+		//{
+		//	char c = str[i];
+		//	switch (c)
+		//	{
+		//	case '{':
+		//	{
+		//		state = 1;
+		//		break;
+		//	}
+		//	case ' ' || "\n":
+		//	{
+		//		break;
+		//	}
+		//	case '"':
+		//	{
+		//		i++;
+		//		while (str[i] != '"')
+		//		{
+		//			tmp += str[i];
+		//			i++;
+		//		}
+		//		cur->val->GetKey()
+		//	}
 
 };
