@@ -12,9 +12,9 @@ public:
 	virtual int getType() = 0;
 	virtual int GetLevel() = 0;
 	virtual string WriteValue() = 0;
-	virtual IterVal* Iter() = 0;//Итератор, которые проходится по объектам (2 метода у итератора: возврат следующего объекта и hasnext)
+	virtual IterVal* Iter() = 0;
 	virtual string GetKey() = 0;
-	virtual string GetVal() = 0;//Если это объект, вернет его; если список, вернет весь список в JSON формате
+	virtual string GetVal() = 0;
 };
 
 string GetWhiteSpace(int level)
@@ -41,14 +41,24 @@ public:
 		prev = _pr;
 		level = lv;
 	}
+	void SetVal(IValue* v)
+	{
+		val = v;
+	}
+	~Link()
+	{
+		delete val;
+	}
 };
 
 class Iterator {
 public:
 	virtual bool hasNext() = 0;
 	virtual bool hasPrev() = 0;
-	virtual Link* next() = 0;
-	virtual Link* prev() = 0;
+	virtual Link* GetNext() = 0;
+	virtual Link* GetHead() = 0;
+	virtual Link* GetCurrent() = 0;
+	virtual Link* GetPrev() = 0;
 };
 
 class IterVal : public Iterator
@@ -56,9 +66,17 @@ class IterVal : public Iterator
 	Link* cur;
 	Link* h;
 public:
-	IterVal(Link* _h = nullptr)
+	IterVal(Link* _h)
 	{
 		h = _h;
+		if (h->next)
+			cur = h->next;
+		else
+			throw - 1;
+	}
+	bool IsEmpty()
+	{
+		return cur==nullptr;
 	}
 	bool hasNext()
 	{
@@ -68,7 +86,11 @@ public:
 	{
 		return cur->prev;
 	}
-	Link* next()
+	bool hasCur()
+	{
+		return cur;
+	}
+	Link* GetNext()
 	{
 		if (!hasNext())
 		{
@@ -77,7 +99,7 @@ public:
 		cur = cur->next;
 		return cur;
 	}
-	Link* prev()
+	Link* GetPrev()
 	{
 		if (cur == h)
 		{
@@ -86,42 +108,40 @@ public:
 		cur = cur->prev;
 		return cur;
 	}
-	bool Find(string k)
+	Link* GetCurrent()
 	{
-		IValue* tmp = h->val;
-		if (tmp->getType() == 0)
+		if (cur == nullptr)
 		{
-			if (tmp->GetKey() == k)
-				return true;
-			return false;
+			throw exception();
 		}
-		IterVal* iter = tmp->Iter();
-		while (true)
+		return cur;
+	}
+	Link* GetHead()
+	{
+		if (h == nullptr)
 		{
-			if (tmp->GetKey() == k)
-				return true;
-			if (iter->hasNext())
-				tmp = iter->next()->val;
-			else
-				return false;
+			throw exception();
 		}
+		return h;
 	}
 };
 
-class LIstValue : public IValue
+class ListValue : public IValue
 {
 	Link* start;
 	Link* end;
 	string key;
+	ListValue* parent;
 	int level;
 public:
-	LIstValue(string k = "", int lv = 0) {
+	ListValue(string k = "", ListValue* _parent = nullptr, int lv = 0) {
 		start = new Link(nullptr, end);
+		parent = _parent;
 		end = start;
 		key = k;
 		level = lv;
 	}
-	LIstValue(const LIstValue& l)
+	ListValue(const ListValue& l)
 	{
 		start = new Link(nullptr, end);
 		end = start;
@@ -130,11 +150,11 @@ public:
 		Link* tmp = l.start->next;
 		while (tmp != nullptr)
 		{
-			Last_add(tmp->val);
+			Last_add(new Link(tmp->val, nullptr, end));
 			tmp = tmp->next;
 		}
-	}
-	LIstValue& operator=(const LIstValue& l)
+	}	
+	ListValue& operator=(const ListValue& l)
 	{
 		clear();
 		key = l.key;
@@ -142,7 +162,7 @@ public:
 		Link* tmp = l.start->next;
 		while (tmp != nullptr)
 		{
-			Last_add(tmp->val);
+			Last_add(new Link(tmp->val, nullptr, end));
 			tmp = tmp->next;
 		}
 		return *this;
@@ -175,22 +195,26 @@ public:
 	}
 	bool isEmpty()
 	{
-		return start == nullptr;
+		return start == end;
 	}
 	void clear()
 	{
 		while (!isEmpty())
 			del_first();
 	}
-	void Last_add(IValue* _val)
+	void Last_add(Link* val)
 	{
-		Link* tmp = new Link(_val, nullptr, end, level+1);
-		end->next = tmp;
-		end = tmp;
+		end->next = val;
+		end = end->next; 
 	}
+
 	string GetKey()
 	{
 		return key;
+	}
+	Link* GetEnd()
+	{
+		return end;
 	}
 	Link* GetStart()
 	{
@@ -204,7 +228,7 @@ public:
 	{
 		string form = "{\n  \"" + key + "\": \n";
 		for (Link* t = start->next; t != nullptr; t = t->next) {
-			form = form + GetWhiteSpace(t->level) + "\{\n " + GetWhiteSpace(t->level) + t->val->GetKey()
+			form = form + GetWhiteSpace(t->level) + "\{\n " + GetWhiteSpace(t->level) + "\"" + t->val->GetKey()
 				+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->level) + "}";
 			if (t != end)
 				form+= ",";
@@ -221,11 +245,15 @@ public:
 	{
 		return GetVal();
 	}
+	ListValue* GetParent()
+	{
+		return parent;
+	}
 	IterVal* Iter()
 	{
 		return new IterVal(start);
 	}
-	~LIstValue()
+	~ListValue()
 	{
 		clear();
 	}
@@ -261,7 +289,7 @@ public:
 	}
 	string WriteValue()
 	{
-		return GetWhiteSpace(level) + "\{\n " + GetWhiteSpace(level) + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
+		return GetWhiteSpace(level) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
 	}
 	string GetVal()
 	{

@@ -7,13 +7,21 @@ using namespace std;
 
 int main()
 {
-	fstream file("text.txt");
-	LIstValue list("students");
-	Value val1("name", "Suren1");
-	Value val2("name", "Suren2");
-	Value val3("name", "Suren3");
-	list.Last_add(&val2);
-	list.Last_add(&val3);
-	file << list.GetVal();
-	return 0;
+	JSon json;
+	//json.Add("name", "Suren1");
+	//json.Add("name", "Suren2");
+	//json.Add("name", "Suren3");
+	//json.Save("text.txt");
+	json.parse("text.txt");
+	cout << json.GetCurrent()->val->WriteValue() << endl;
+	json.next();
+	cout << json.GetCurrent()->val->WriteValue() << endl;
+	json.next();	
+	cout << json.GetCurrent()->val->WriteValue() << endl;
+	json.back();
+	cout << json.GetCurrent()->val->WriteValue() << endl;
+	json.back();
+	cout << json.GetCurrent()->val->WriteValue() << endl;
+	json.Save("text2.txt");
+	return 0; 
 }

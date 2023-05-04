@@ -41,6 +41,7 @@ class Tokenizer {
 public:
 	Tokenizer(string filename)
 	{
+		if(!file.is_open())
 		file.open(filename, ios::in);
 		if (file.bad())
 			throw exception("Fail error");
@@ -60,51 +61,52 @@ public:
 			{
 				return c;
 			}
-			c++;
 		}
 		return c;
 	}
-	Token* getToken()
+	Token getToken()
 	{
 		char c;
 		if (file.eof()) {
-			std::cout << "Exhaused tokens" << std::endl;
+			throw exception("Exhaused tokens");
 		}
+		if (!file.is_open())
+			throw exception("Error");
 		c = getWithoutWhiteSpace();
 
-		Token* token;
+		Token token;
 		switch (c)
 		{
 		case '"':
 		{
-			token->type = TOKEN::STRING;
-			token->value = "";
+			token.type = TOKEN::STRING;
+			token.value = "";
 			file.get(c);
 			while (c != '"')
 			{
-				token->value += c;
+				token.value += c;
 				file.get(c);
 			}
 			break;
 		}
 		case'{':
 		{
-			token->type = TOKEN::CURLY_OPEN;
+			token.type = TOKEN::CURLY_OPEN;
 			break;
 		}
 		case'}':
 		{ 
-			token->type = TOKEN::CURLY_CLOSE;
+			token.type = TOKEN::CURLY_CLOSE;
 			break;
 		}
 		case':':
 		{
-			token->type = TOKEN::COLON;
+			token.type = TOKEN::COLON;
 			break;
 		}
 		case',':
 		{
-			token->type = TOKEN::COMMA;
+			token.type = TOKEN::COMMA;
 			break;
 		}
 		}
