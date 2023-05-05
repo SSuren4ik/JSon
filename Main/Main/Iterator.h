@@ -27,6 +27,13 @@ string GetWhiteSpace(int level)
 	return tmp;
 }
 
+	int Check(int a)
+	{
+		if (a <= 0)
+			return 0;
+		return a;
+	}
+
 struct Link
 {
 	Link* next;
@@ -69,10 +76,7 @@ public:
 	IterVal(Link* _h)
 	{
 		h = _h;
-		if (h->next)
-			cur = h->next;
-		else
-			throw - 1;
+		cur = h->next;
 	}
 	bool IsEmpty()
 	{
@@ -177,7 +181,7 @@ public:
 		if (isEmpty())
 			end = nullptr;
 	}
-	void Delete(Link* d)//Почему удаляем Link, а добавляем Value???
+	void Delete(Link* d)
 	{
 		if (isEmpty())
 			throw exception();
@@ -226,15 +230,24 @@ public:
 	}
 	string GetVal()
 	{
-		string form = "{\n  \"" + key + "\": \n";
+		string form = GetWhiteSpace(parent->GetLevel())+"{\n  " + GetWhiteSpace(parent->GetLevel()) +  "\"" + key + "\": \n";
 		for (Link* t = start->next; t != nullptr; t = t->next) {
-			form = form + GetWhiteSpace(t->level) + "\{\n " + GetWhiteSpace(t->level) + "\"" + t->val->GetKey()
-				+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->level) + "}";
-			if (t != end)
-				form+= ",";
-			form+= "\n";
+			if (t->val->getType() == 1)
+			{
+				form =form + GetWhiteSpace(Check(t->val->GetLevel() - 1)) + t->val->WriteValue();
+			}
+			else
+			{
+				form = form + GetWhiteSpace(t->val->GetLevel()) + "\{\n " + GetWhiteSpace(t->val->GetLevel()) + "\"" + t->val->GetKey()
+					+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->val->GetLevel()) + "}";
+				if (t != end)
+					form += ",";
+				form += "\n";
+			}
+			//cout << form << endl << endl;
 		}
-		form += "}\n";
+		form =form + GetWhiteSpace(parent->GetLevel()) + GetWhiteSpace(Check((level-1))) + "}\n";
+		//cout << form << endl << endl;
 		return form;
 	}
 	int getType()
@@ -289,7 +302,7 @@ public:
 	}
 	string WriteValue()
 	{
-		return GetWhiteSpace(level) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
+		return GetWhiteSpace(Check(level)) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
 	}
 	string GetVal()
 	{
