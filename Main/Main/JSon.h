@@ -9,13 +9,13 @@ using namespace std;
 class JSon
 {
 	ListValue* root;
-	stack<Iterator*> st;
+	stack<IterVal*> st;
 	Link* cur;
 public:
 
 	JSon()
 	{
-		root = new ListValue("Main");
+		root = new ListValue("Main", root);
 		cur = nullptr;
 		st.push(root->Iter());
 	}
@@ -36,130 +36,76 @@ public:
 	}
 	void next()
 	{
-		if (cur->next)
-			cur = cur->next;
-		else
-			throw exception("NEKUDA");
-		//if (st.empty())
-		//{
-		//	if (cur->next)
-		//		cur = cur->next;
-		//	else
-		//		throw exception();
-		//}
-		//else
-		//{
-		//	if (!st.top()->hasNext())
-		//		throw - 1;
-		//	cur = st.top()->GetNext();
-		//}
-	}
-	void down()
-	{
 		if (cur->val->getType() == 0)
 			throw exception("UZHE VNUTRI");
-		if (cur->val != nullptr)
+		if (st.top()->hasNext())
+			cur = st.top()->GetNext();
+		else
 		{
-			st.push(root->Iter());
-			root = (ListValue*)(cur->val);
-			cur = root->GetStart()->next;
+			throw exception("KONEC");
 		}
+	}
+	void down()
+	{		
+		if (cur->val->getType() == 0)
+			throw exception("UZHE VNUTRI");
+		st.push(cur->val->Iter());
+		cur = st.top()->GetHead()->next;
 	}
 	void back()
 	{
-		if (cur->prev &&cur->prev!= root->GetStart())
+		if (cur->prev!= st.top()->GetHead())
 		{
-			cur = cur->prev;
+			cur = st.top()->GetPrev();
 		}
 		else
 		{
-			if (st.empty())
-				throw exception("UZHE NACHALO");
-			cur = st.top()->GetCurrent();
 			st.pop();
+			cur = st.top()->GetCurrent();
 		}
-
-		//if (st.empty())
-		//{
-		//	if (cur->prev == nullptr)
-		//		throw exception("It is head");
-		//	cur = cur->prev;
-		//	return;
-		//}
-		//else
-		//{
-		//	if (cur->val->getType() == 0)
-		//	{
-		//		st.pop();
-		//	}
-		//	else
-		//	{
-		//		if (st.top()->hasPrev())
-		//			cur = st.top()->GetPrev();
-		//		else
-		//		{
-		//			st.pop();
-		//			cur = st.top()->GetCurrent();
-		//		}
-		//	}
-		//}
 	}
 	void Add(string key, string val) 
-	{
-		Link* curtmp;
-		if (st.empty())
+	{	
+		if (!st.top()->hasCur())
 		{
-			if (cur)
-			{
-				curtmp = cur;
-			}
-			else
-			{
-				root->Last_add(new Link(new Value(key, val, root->GetLevel()+1), nullptr, root->GetStart(), root->GetLevel() + 1));
-				cur = root->GetEnd();
-				return;
-			}
+			root->Last_add(new Link(new Value(key, val, root->GetLevel()+1), nullptr, root->GetStart(), root->GetLevel() + 1));
+			cur = st.top()->GetCurrent();
+			//cout << root->WriteValue() << endl;
+			return;
 		}
-		else
-		{
-			curtmp = st.top()->GetCurrent();
-		}
+		Link* curtmp = st.top()->GetCurrent();
 
 		if (curtmp->val->getType()==0) 
 		{
 			string tmpKey = curtmp->val->GetKey();
 			string tmpVal = curtmp->val->GetVal();
 			delete curtmp->val;
-			curtmp->SetVal(new ListValue(tmpKey, nullptr, curtmp->level+1));
-			((ListValue*)(curtmp->val))->Last_add(new Link(new Value(key, val, curtmp->level + 1), nullptr, ((ListValue*)curtmp->val)->GetEnd(), cur->level + 1));
-			//cout << curtmp->val->WriteValue();
+			curtmp->SetVal(new ListValue(tmpKey, (ListValue*)(st.top()->GetCurrent()->val), curtmp->level));
+			((ListValue*)(curtmp->val))->Last_add(new Link(new Value(key, val, curtmp->level + 1), nullptr, ((ListValue*)curtmp->val)->GetEnd(), curtmp->level + 1));
+			st.push(((ListValue*)(curtmp->val))->Iter());
+			cur = st.top()->GetCurrent();
 		}
 		else if (curtmp->val->getType() == 1)
 		{
-			((ListValue*)curtmp->val)->Last_add(new Link(new Value(key, val), nullptr, ((ListValue*)curtmp->val)->GetEnd(), curtmp->level+1));
+			((ListValue*)curtmp->val)->Last_add(new Link(new Value(key, val, curtmp->level+1), nullptr, ((ListValue*)curtmp->val)->GetEnd(), curtmp->level+1));
+			st.push(((ListValue*)(curtmp->val))->Iter());
+			cur = st.top()->GetCurrent();
 		}
+		//cout << root->WriteValue();
 	}
 
 	void Add_new(string key, string val)
 	{
-		Link* curtmp;
-		if (st.empty())
+		if (!st.top()->hasCur())
 		{
-			curtmp = root->GetEnd();
-			curtmp->next = new Link(new Value(key, val), nullptr, root->GetEnd(), root->GetLevel()+1);
-			root->Last_add(curtmp->next);
+			root->Last_add(new Link(new Value(key, val, root->GetLevel() + 1), nullptr, root->GetStart(), root->GetLevel() + 1));
+			cur = st.top()->GetCurrent();
+			//cout << root->WriteValue() << endl;
+			return;
 		}
-		else
-		{
-			Iterator* iter = st.top();
-			curtmp = iter->GetHead();
-			while (iter->hasNext())
-				curtmp = iter->GetNext();
-			curtmp->next = new Link(new Value(key, val), nullptr, curtmp, curtmp->level);
-			root->Last_add(curtmp->next);
-		}
-		cur = curtmp->next;
-		//cout << root->WriteValue() << endl << endl;
+		Link* curtmp = st.top()->GetCurrent();
+		cur->next = new Link(new Value(key, val, cur->level), nullptr, cur, cur->level);
+		cur = st.top()->GetNext();
 	}
 
 	void parse(string filename)

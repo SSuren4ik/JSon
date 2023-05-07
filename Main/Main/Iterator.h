@@ -58,17 +58,8 @@ public:
 	}
 };
 
-class Iterator {
-public:
-	virtual bool hasNext() = 0;
-	virtual bool hasPrev() = 0;
-	virtual Link* GetNext() = 0;
-	virtual Link* GetHead() = 0;
-	virtual Link* GetCurrent() = 0;
-	virtual Link* GetPrev() = 0;
-};
 
-class IterVal : public Iterator
+class IterVal
 {
 	Link* cur;
 	Link* h;
@@ -76,7 +67,7 @@ public:
 	IterVal(Link* _h)
 	{
 		h = _h;
-		cur = h->next;
+		cur=h->next;
 	}
 	bool IsEmpty()
 	{
@@ -96,6 +87,7 @@ public:
 	}
 	Link* GetNext()
 	{
+		Update();
 		if (!hasNext())
 		{
 			throw exception();
@@ -114,6 +106,7 @@ public:
 	}
 	Link* GetCurrent()
 	{
+		Update();
 		if (cur == nullptr)
 		{
 			throw exception();
@@ -127,6 +120,13 @@ public:
 			throw exception();
 		}
 		return h;
+	}
+	void Update()
+	{
+		if (IsEmpty())
+		{
+			cur = h->next;
+		}
 	}
 };
 
@@ -230,24 +230,28 @@ public:
 	}
 	string GetVal()
 	{
-		string form = GetWhiteSpace(parent->GetLevel())+"{\n  " + GetWhiteSpace(parent->GetLevel()) +  "\"" + key + "\": \n";
+		int offset;
+		if (parent == nullptr)
+			offset = 0;
+		else
+			offset = parent->GetLevel();
+			string form ="{\n  " + GetWhiteSpace(offset) + "\"" + key + "\": \n";
 		for (Link* t = start->next; t != nullptr; t = t->next) {
 			if (t->val->getType() == 1)
 			{
-				form =form + GetWhiteSpace(Check(t->val->GetLevel() - 1)) + t->val->WriteValue();
+				form = form + GetWhiteSpace(t->val->GetLevel()+1) + t->val->WriteValue();
 			}
 			else
 			{
-				form = form + GetWhiteSpace(t->val->GetLevel()) + "\{\n " + GetWhiteSpace(t->val->GetLevel()) + "\"" + t->val->GetKey()
-					+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->val->GetLevel()) + "}";
+				form = form + GetWhiteSpace(t->val->GetLevel()+1) + "\{\n " + GetWhiteSpace(t->val->GetLevel()+1) + "\"" + t->val->GetKey()
+					+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->val->GetLevel()+1) + "}";
 				if (t != end)
 					form += ",";
 				form += "\n";
 			}
-			//cout << form << endl << endl;
 		}
-		form =form + GetWhiteSpace(parent->GetLevel()) + GetWhiteSpace(Check((level-1))) + "}\n";
-		//cout << form << endl << endl;
+		form = form + GetWhiteSpace(offset) + GetWhiteSpace(level) + "}\n";
+		cout << form << endl << endl;
 		return form;
 	}
 	int getType()
@@ -302,7 +306,7 @@ public:
 	}
 	string WriteValue()
 	{
-		return GetWhiteSpace(Check(level)) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
+		return GetWhiteSpace(level) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
 	}
 	string GetVal()
 	{
