@@ -27,6 +27,11 @@ namespace My_dll
 
 			json->Add(key, val);
 		}
+		String^ getStringCurrent()
+		{
+			String^ str = gcnew String(json->GetCurrent()->val->WriteValue().data());
+			return str;
+		}
 		void Add_new(String^ k, String^ v)
 		{
 			string key = msclr::interop::marshal_as<std::string>(k);
@@ -37,7 +42,14 @@ namespace My_dll
 		}
 		void Down()
 		{
-			json->down();
+			try
+			{
+				json->down();
+			}
+			catch (...)
+			{
+				;
+			}
 		}
 		String^ getString() {
 			String^ str = gcnew String(json->Write().data());
@@ -45,11 +57,25 @@ namespace My_dll
 		}
 		void Back()
 		{
-			json->back();
+			try
+			{
+				json->back();
+			}
+			catch (...)
+			{
+
+			}
 		}
 		void Next()
 		{
-			json->next();
+			try
+			{
+				json->next();
+			}
+			catch (...)
+			{
+				;
+			}
 		}
 		void Save(String^ addr)
 		{

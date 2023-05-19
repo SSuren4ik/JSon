@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using My_dll;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using My_dll;
 
 namespace WindowsFormsApp1
 {
@@ -19,7 +13,8 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
-            richTextBox1.ReadOnly = false;
+            richTextBox1.ReadOnly = true;
+            richTextBox4.ReadOnly = true;
 
             richTextBox2.ReadOnly = false;
             richTextBox2.BackColor = Color.White;
@@ -29,6 +24,7 @@ namespace WindowsFormsApp1
 
         private void Open_Button(object sender, EventArgs e)
         {
+            richTextBox1.ReadOnly = false;
             OpenFileDialog openFile = new OpenFileDialog();
             if(openFile.ShowDialog() == DialogResult.OK ) 
             {
@@ -36,7 +32,9 @@ namespace WindowsFormsApp1
                 txtname = txt;
                 json.load(txtname);
                 richTextBox1.Text = json.getString();
+                richTextBox4.Text = json.getStringCurrent();
             }
+            richTextBox1.ReadOnly = true;
         }
         private void Save_Button(object sender, EventArgs e)
         {
@@ -49,6 +47,7 @@ namespace WindowsFormsApp1
             {
                 json.addVal(richTextBox2.Text, richTextBox3.Text);
                 richTextBox1.Text = json.getString();
+                richTextBox4.Text = json.getStringCurrent();
             }
         }
         private void Add_New_Button(object sender, EventArgs e)
@@ -57,7 +56,26 @@ namespace WindowsFormsApp1
             {
                 json.Add_new(richTextBox2.Text, richTextBox3.Text);
                 richTextBox1.Text = json.getString();
+                richTextBox4.Text = json.getStringCurrent();
             }
+        }
+
+        private void Next_Button(object sender, EventArgs e)
+        {
+                json.Next();
+            richTextBox4.Text= json.getStringCurrent();
+        }
+
+        private void Back_Button(object sender, EventArgs e)
+        {
+            json.Back();
+            richTextBox4.Text = json.getStringCurrent();
+        }
+
+        private void Down_Button(object sender, EventArgs e)
+        {
+            json.Down();
+            richTextBox4.Text = json.getStringCurrent();
         }
     }
 }

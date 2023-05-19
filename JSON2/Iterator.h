@@ -127,6 +127,45 @@ namespace JSON_LIB
 		}
 	};
 
+	class Value : public IValue
+	{
+		string key;
+		string val;
+		int level;
+	public:
+		Value(string k = "", string v = "", int lv = 0)
+		{
+			key = k;
+			val = v;
+			level = lv;
+		}
+		int getType()
+		{
+			return 0;
+		}
+		IterVal* Iter()
+		{
+			return nullptr;
+		}
+		string GetKey()
+		{
+			return key;
+		}
+		int GetLevel()
+		{
+			return level;
+		}
+		string WriteValue()
+		{
+			return "\"" + key + "\": \"" + val + "\"";
+		}
+		string GetVal()
+		{
+			return val;
+		}
+	};
+
+
 	class ListValue : public IValue
 	{
 		Link* start;
@@ -225,14 +264,11 @@ namespace JSON_LIB
 		{
 			return level;
 		}
+
 		string GetVal()
 		{
-			int offset;
-			if (parent == nullptr)
-				offset = 0;
-			else
-				offset = parent->GetLevel();
-			string form = "{\n  " + GetWhiteSpace(offset) + "\"" + key + "\": \n";
+			string form = "{\n  " + GetWhiteSpace(level+1) + "\"" + key + "\":\n";
+			int ch = 0;
 			for (Link* t = start->next; t != nullptr; t = t->next) {
 				if (t->val->getType() == 1)
 				{
@@ -240,15 +276,25 @@ namespace JSON_LIB
 				}
 				else
 				{
-					form = form + GetWhiteSpace(t->val->GetLevel() + 1) + "\{\n " + GetWhiteSpace(t->val->GetLevel() + 1) + "\"" + t->val->GetKey()
-						+ "\": \"" + t->val->GetVal() + "\"\n" + GetWhiteSpace(t->val->GetLevel() + 1) + "}";
-					if (t != end)
+					if (t->next!=nullptr)
+						form += GetWhiteSpace(t->val->GetLevel() + 1)+ "{\n";
+					ch++;
+					form = form + GetWhiteSpace(t->val->GetLevel() + 1) + t->val->WriteValue();
+					if (t->next != nullptr)
+					{
 						form += ",";
-					form += "\n";
+						form += "\n";
+					}
+					else
+					{ 
+						form += "\n";
+						form+= GetWhiteSpace(t->val->GetLevel() + 1) + "}\n";
+					}
 				}
+				//cout << form << endl << endl;
 			}
-			form = form + GetWhiteSpace(offset) + GetWhiteSpace(level) + "}\n";
-			cout << form << endl << endl;
+			form = form + GetWhiteSpace(level) + "}\n";
+			//cout << form << endl << endl;
 			return form;
 		}
 		int getType()
@@ -270,44 +316,6 @@ namespace JSON_LIB
 		~ListValue()
 		{
 			clear();
-		}
-	};
-
-	class Value : public IValue
-	{
-		string key;
-		string val;
-		int level;
-	public:
-		Value(string k = "", string v = "", int lv = 0)
-		{
-			key = k;
-			val = v;
-			level = lv;
-		}
-		int getType()
-		{
-			return 0;
-		}
-		IterVal* Iter()
-		{
-			return nullptr;
-		}
-		string GetKey()
-		{
-			return key;
-		}
-		int GetLevel()
-		{
-			return level;
-		}
-		string WriteValue()
-		{
-			return GetWhiteSpace(level) + "\{\n " + GetWhiteSpace(level) + "\"" + key + "\": \"" + val + "\"\n" + GetWhiteSpace(level) + "}";
-		}
-		string GetVal()
-		{
-			return val;
 		}
 	};
 }

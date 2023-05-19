@@ -37,6 +37,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -51,7 +55,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(461, 9);
+            this.label1.Location = new System.Drawing.Point(722, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(32, 17);
             this.label1.TabIndex = 4;
@@ -60,7 +64,7 @@
             // richTextBox2
             // 
             this.richTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.richTextBox2.Location = new System.Drawing.Point(421, 38);
+            this.richTextBox2.Location = new System.Drawing.Point(671, 43);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.Size = new System.Drawing.Size(119, 27);
             this.richTextBox2.TabIndex = 5;
@@ -81,7 +85,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(668, 13);
+            this.label2.Location = new System.Drawing.Point(710, 102);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 17);
             this.label2.TabIndex = 7;
@@ -89,7 +93,7 @@
             // 
             // richTextBox3
             // 
-            this.richTextBox3.Location = new System.Drawing.Point(634, 38);
+            this.richTextBox3.Location = new System.Drawing.Point(671, 122);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.Size = new System.Drawing.Size(119, 27);
             this.richTextBox3.TabIndex = 8;
@@ -120,7 +124,7 @@
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button4.Location = new System.Drawing.Point(607, 355);
+            this.button4.Location = new System.Drawing.Point(632, 396);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 11;
@@ -128,11 +132,56 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.Add_New_Button);
             // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button5.Location = new System.Drawing.Point(504, 355);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 12;
+            this.button5.Text = "Next";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Next_Button);
+            // 
+            // richTextBox4
+            // 
+            this.richTextBox4.Location = new System.Drawing.Point(418, 23);
+            this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.Size = new System.Drawing.Size(222, 170);
+            this.richTextBox4.TabIndex = 13;
+            this.richTextBox4.Text = "";
+            // 
+            // button6
+            // 
+            this.button6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button6.Location = new System.Drawing.Point(418, 355);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 14;
+            this.button6.Text = "Back";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.Back_Button);
+            // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button7.Location = new System.Drawing.Point(459, 396);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 15;
+            this.button7.Text = "Down";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.Down_Button);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.richTextBox4);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -159,6 +208,10 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.RichTextBox richTextBox4;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
 
