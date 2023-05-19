@@ -39,8 +39,6 @@ namespace JSON_LIB
 		}
 		void next()
 		{
-			if (cur->val->getType() == 0)
-				throw new exception("UZHE VNUTRI");
 			if (st.top()->hasNext())
 				cur = st.top()->GetNext();
 			else
