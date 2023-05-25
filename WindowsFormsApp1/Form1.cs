@@ -38,8 +38,18 @@ namespace WindowsFormsApp1
         }
         private void Save_Button(object sender, EventArgs e)
         {
-            if (txtname != "")
-                json.Save(txtname);
+            if (txtname == "")
+            {
+                richTextBox1.ReadOnly = false;
+                OpenFileDialog openFile = new OpenFileDialog();
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    string txt = openFile.FileName.ToString();
+                    txtname = txt;
+                }
+                richTextBox1.ReadOnly = true;
+            }
+            json.Save(txtname);
         }
         private void Add_Button(object sender, EventArgs e)
         {

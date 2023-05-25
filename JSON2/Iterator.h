@@ -116,15 +116,6 @@ namespace JSON_LIB
 				cur = h->next;
 			}
 		}
-		~IterVal()
-		{
-			while(!IsEmpty())
-			{
-				Link* tmp = cur;
-				cur = cur->prev;
-				delete tmp;
-			}
-		}
 	};
 
 	class Value : public IValue
@@ -267,34 +258,44 @@ namespace JSON_LIB
 
 		string GetVal()
 		{
-			string form = "{\n  " + GetWhiteSpace(level+1) + "\"" + key + "\":\n";
+			string form ="\""+ key + "\"" + "\:\n";
 			int ch = 0;
-			for (Link* t = start->next; t != nullptr; t = t->next) {
+			for (Link* t = start->next; t != nullptr; t = t->next)
+			{
 				if (t->val->getType() == 1)
 				{
-					form = form + GetWhiteSpace(t->val->GetLevel() + 1) + t->val->WriteValue();
-				}
-				else
-				{
-					if (t->next!=nullptr)
-						form += GetWhiteSpace(t->val->GetLevel() + 1)+ "{\n";
-					ch++;
-					form = form + GetWhiteSpace(t->val->GetLevel() + 1) + t->val->WriteValue();
+					form += GetWhiteSpace(t->val->GetLevel() + 2) + "{\n" + GetWhiteSpace(t->val->GetLevel() + 2);
+					form += t->val->WriteValue() + GetWhiteSpace(t->val->GetLevel() + 2)+"}";
 					if (t->next != nullptr)
 					{
 						form += ",";
 						form += "\n";
 					}
 					else
-					{ 
+					{
 						form += "\n";
-						form+= GetWhiteSpace(t->val->GetLevel() + 1) + "}\n";
 					}
 				}
-				//cout << form << endl << endl;
+				else
+				{
+					if (t->next != nullptr || ch == 0)
+						form += GetWhiteSpace(t->val->GetLevel() + 2) + "{\n";
+					ch++;
+					form = form + GetWhiteSpace(t->val->GetLevel() + 2) + t->val->WriteValue();
+					if (t->next != nullptr)
+					{
+						form += ",";
+						form += "\n";
+					}
+					else
+					{
+						form += "\n";
+						form += GetWhiteSpace(t->val->GetLevel() + 2) + "}\n";
+					}
+				}
+				cout << form << endl;
 			}
-			form = form + GetWhiteSpace(level) + "}\n";
-			//cout << form << endl << endl;
+			cout << form << endl;
 			return form;
 		}
 		int getType()

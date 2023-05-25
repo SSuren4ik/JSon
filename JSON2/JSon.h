@@ -30,12 +30,11 @@ namespace JSON_LIB
 			fstream file;
 			if (!file.is_open())
 				file.open(filename, ios::out);
-			file << root->WriteValue();
+			file << Write();
 		}
 		string Write()
 		{
-			//string tmp = "";
-			return root->WriteValue();
+			return  "\{\n" + GetWhiteSpace(root->GetLevel()+1) + root->WriteValue()+ "\}\n";
 		}
 		void next()
 		{
@@ -74,9 +73,6 @@ namespace JSON_LIB
 			{
 				root->Last_add(new Link(new Value(key, val, root->GetLevel() + 1), nullptr, root->GetStart(), root->GetLevel() + 1));
 				cur = st.top()->GetCurrent();
-				//cout << cur->val->WriteValue() << endl;
-				//cout << root->GetEnd()->val->WriteValue() << endl;
-				//cout << root->WriteValue() << endl;
 				return;
 			}
 			Link* curtmp = st.top()->GetCurrent();
@@ -89,9 +85,6 @@ namespace JSON_LIB
 				((ListValue*)(curtmp->val))->Last_add(new Link(new Value(key, val, curtmp->level + 1), nullptr, ((ListValue*)curtmp->val)->GetEnd(), curtmp->level + 1));
 				st.push(((ListValue*)(curtmp->val))->Iter());
 				cur = st.top()->GetCurrent();
-				//cout << cur->val->WriteValue();
-				//cout << ((ListValue*)(curtmp->val))->GetEnd()->val->WriteValue();
-				//cout << root->WriteValue();
 			}
 			else if (curtmp->val->getType() == 1)
 			{
@@ -99,9 +92,6 @@ namespace JSON_LIB
 				st.push(((ListValue*)(curtmp->val))->Iter());
 				cur = st.top()->GetCurrent();
 			}
-			//cout << cur->val->WriteValue();
-			//cout << root->GetEnd()->val->WriteValue();
-			//cout << root->WriteValue();
 		}
 		void Add_new(string key, string val)
 		{
@@ -109,19 +99,30 @@ namespace JSON_LIB
 			{
 				root->Last_add(new Link(new Value(key, val, root->GetLevel() + 1), nullptr, root->GetStart(), root->GetLevel() + 1));
 				cur = st.top()->GetCurrent();
-				//cout << root->WriteValue() << endl;
 				return;
 			}
-			st.top()->GetCurrent()->next = new Link(new Value(key, val, cur->level), nullptr, cur, cur->level);
+			IterVal* it = st.top();
+			while (it->hasNext())
+			{
+				it->GetNext();
+			}
+			it->GetCurrent()->next = new Link(new Value(key, val, cur->level), nullptr, cur, cur->level);
 			cur = st.top()->GetNext();
 		}
 
 		void parse(string filename)
 		{
-			//delete root;
-			//root = new ListValue("Main", root);
-			//cur = nullptr;
-			//st.push(root->Iter());
+			delete root;
+			root = new ListValue("Main", root);
+			cur = nullptr;
+			while (!st.empty())
+			{  
+				IterVal *i= st.top();
+				st.pop();
+				delete i;
+			}
+			st.push(root->Iter());
+
 			Tokenizer tokenizer(filename);
 			Token token;
 			if (tokenizer.hasMoreTokens())
@@ -168,13 +169,14 @@ namespace JSON_LIB
 				else if (token.type == TOKEN::CURLY_CLOSE)
 				{
 					ch--;
-					if (ch == 0)
+					if(ch>1)
 						root = root->GetParent();
 				}	
+				cout << root->WriteValue();
 			}
 			st.push(root->Iter());
 			cur = root->GetStart()->next;
-			cout << root->WriteValue();
+			//cout << root->WriteValue();
 		}
 		~JSon()
 		{
