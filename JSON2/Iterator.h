@@ -262,40 +262,31 @@ namespace JSON_LIB
 			int ch = 0;
 			for (Link* t = start->next; t != nullptr; t = t->next)
 			{
+				if ( ch == 0)
+					form += GetWhiteSpace(t->val->GetLevel() + 2) + "{\n";
 				if (t->val->getType() == 1)
 				{
-					form += GetWhiteSpace(t->val->GetLevel() + 2) + "{\n" + GetWhiteSpace(t->val->GetLevel() + 2);
-					form += t->val->WriteValue() + GetWhiteSpace(t->val->GetLevel() + 2)+"}";
-					if (t->next != nullptr)
-					{
-						form += ",";
-						form += "\n";
-					}
-					else
-					{
-						form += "\n";
-					}
+					form += GetWhiteSpace(t->val->GetLevel() + 2);
+					form += t->val->WriteValue();
 				}
 				else
 				{
-					if (t->next != nullptr || ch == 0)
-						form += GetWhiteSpace(t->val->GetLevel() + 2) + "{\n";
-					ch++;
 					form = form + GetWhiteSpace(t->val->GetLevel() + 2) + t->val->WriteValue();
-					if (t->next != nullptr)
-					{
-						form += ",";
-						form += "\n";
-					}
-					else
-					{
-						form += "\n";
-						form += GetWhiteSpace(t->val->GetLevel() + 2) + "}\n";
-					}
 				}
-				cout << form << endl;
+				if (t->next != nullptr)
+				{
+					form += ",";
+					form += "\n";
+				}
+				else
+				{
+					form += "\n";
+					form += GetWhiteSpace(t->val->GetLevel() + 2) + "}";
+				}
+				ch++;
+				//cout << form << endl;
 			}
-			cout << form << endl;
+			//cout << form << endl;
 			return form;
 		}
 		int getType()

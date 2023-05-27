@@ -34,7 +34,7 @@ namespace JSON_LIB
 		}
 		string Write()
 		{
-			return  "\{\n" + GetWhiteSpace(root->GetLevel()+1) + root->WriteValue()+ "\}\n";
+			return  "\{\n" + GetWhiteSpace(root->GetLevel()+1) + root->WriteValue()+ "\n}\n";
 		}
 		void next()
 		{
@@ -172,7 +172,7 @@ namespace JSON_LIB
 					if(ch>1)
 						root = root->GetParent();
 				}	
-				cout << root->WriteValue();
+				//cout << root->WriteValue();
 			}
 			st.push(root->Iter());
 			cur = root->GetStart()->next;
